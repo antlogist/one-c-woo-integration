@@ -1,0 +1,16 @@
+/*
+Theme Name:   Twenty Twenty-Five Child
+Theme URI:    https://example.com/twentytwentyfive-child/
+Description:  Child theme Twenty Twenty-Five
+Author:       Anthony Podlesnyy
+Author URI:   https://podlesnyy.ru
+Template:     twentytwentyfive
+Version:      1.0.0
+License:      GNU General Public License v2 or later
+License URI:  http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain:  twentytwentyfive-child
+Tags:         light, dark, two-columns, right-sidebar, responsive-layout, accessibility-ready
+*/
+
+/* Import parent theme style */
+@import url("../twentytwentyfive/style.css");
