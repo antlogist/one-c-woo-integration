@@ -1,0 +1,15 @@
+{
+    "name": "anthony/twentytwentyfive-child",
+    "autoload": {
+        "psr-4": {
+            "TwentytwentyfiveChild\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "podlesnyy",
+            "email": "info@podlesnyy.ru"
+        }
+    ],
+    "require": {}
+}
