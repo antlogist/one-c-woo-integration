@@ -13,7 +13,7 @@ class BasicAuthenticator
         $this->password = $password;
     }
 
-    public function authenticate()
+    public function authenticate(): bool
     {
         $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
 
@@ -39,5 +39,7 @@ class BasicAuthenticator
         if ($username !== $this->username || $password !== $this->password) {
             throw new \Exception('Incorrect username or password.');
         }
+
+        return true;
     }
 }
