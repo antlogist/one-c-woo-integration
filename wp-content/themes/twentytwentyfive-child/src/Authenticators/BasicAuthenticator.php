@@ -30,9 +30,10 @@ class BasicAuthenticator
             throw new \Exception('Error decoding authorization data.');
         }
 
-        list($username, $password) = explode(':', $decodedAuth);
-
-        if (!isset($username, $password)) {
+        $parts = explode(':', $decodedAuth);
+        if (count($parts) === 2 && isset($parts[0]) && isset($parts[1])) {
+            list($username, $password) = $parts;
+        } else {
             throw new \Exception('Login or password is missing.');
         }
 
