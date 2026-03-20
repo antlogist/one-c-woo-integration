@@ -48,3 +48,4 @@ wp-config.php
 /wp-content/themes/*
 !/wp-content/themes/twentytwentyfive-child
 /wp-content/themes/twentytwentyfive-child/vendor
+/wp-content/themes/twentytwentyfive-child/composer.lock

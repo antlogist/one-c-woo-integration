@@ -11,5 +11,7 @@
             "email": "info@podlesnyy.ru"
         }
     ],
-    "require": {}
+    "require-dev": {
+        "phpunit/phpunit": "^12"
+    }
 }
