@@ -15,92 +15,7 @@ final class BasicAuthenticatorTest extends TestCase
     {
         $authenticator = new BasicAuthenticator($username, $password);
 
-        $_SERVER['HTTP_AUTHORIZATION'] = $authorizationHeader;
-
-        $this->assertTrue($authenticator->authenticate());
-
-        unset($_SERVER['HTTP_AUTHORIZATION']);
-    }
-
-    public function testMissingAuthorizationHeaderThrowsException()
-    {
-        $authenticator = new BasicAuthenticator('any_username', 'any_password');
-
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('The authorization header is missing.');
-
-        $authenticator->authenticate();
-    }
-
-    public function testInvalidAuthorizationHeaderThrowsException()
-    {
-        $authenticator = new BasicAuthenticator('any_username', 'any_password');
-
-        $_SERVER['HTTP_AUTHORIZATION'] = 'header data';
-
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('Invalid authorization header format.');
-
-        $authenticator->authenticate();
-
-        unset($_SERVER['HTTP_AUTHORIZATION']);
-    }
-
-    public function testDecodingErrorThrowsException()
-    {
-        $authenticator = new BasicAuthenticator('any_username', 'any_password');
-
-        $_SERVER['HTTP_AUTHORIZATION'] = 'Basic wrong_header_data';
-
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('Error decoding authorization data.');
-
-        $authenticator->authenticate();
-
-        unset($_SERVER['HTTP_AUTHORIZATION']);
-    }
-
-    public function testMissingLoginOrPasswordThrowsException()
-    {
-        // error_reporting(E_ALL);
-        $authenticator = new BasicAuthenticator('any_username', 'any_password');
-
-        $_SERVER['HTTP_AUTHORIZATION'] = 'Basic ' . base64_encode('only_username');
-
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('Login or password is missing.');
-
-        $authenticator->authenticate();
-
-        unset($_SERVER['HTTP_AUTHORIZATION']);
-    }
-
-    public function testIncorrectUsernameThrowException()
-    {
-        $authenticator = new BasicAuthenticator('any_username', 'any_password');
-
-        $_SERVER['HTTP_AUTHORIZATION'] = 'Basic ' . base64_encode('incorrect_username:any_password');
-
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('Incorrect username or password.');
-
-        $authenticator->authenticate();
-
-        unset($_SERVER['HTTP_AUTHORIZATION']);
-    }
-
-    public function testIncorrectPasswordThrowException()
-    {
-        $authenticator = new BasicAuthenticator('any_username', 'any_password');
-
-        $_SERVER['HTTP_AUTHORIZATION'] = 'Basic ' . base64_encode('any_username:incorrect_password');
-
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('Incorrect username or password.');
-
-        $authenticator->authenticate();
-
-        unset($_SERVER['HTTP_AUTHORIZATION']);
+        $this->assertTrue($authenticator->authenticate($authorizationHeader));
     }
 
     public static function validCredentialsDataProvider(): array
@@ -109,6 +24,29 @@ final class BasicAuthenticatorTest extends TestCase
 
         return [
             [ONE_C_USERNAME, ONE_C_PASSWORD, $authorizationHeader]
+        ];
+    }
+
+    #[DataProvider('invalidAuthDataProvider')]
+    public function testInvalidAuthScenarios(string $authHeader, string $expectedMessage)
+    {
+        $authenticator = new BasicAuthenticator('any_username', 'any_password');
+
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage($expectedMessage);
+
+        $authenticator->authenticate($authHeader);
+    }
+
+    public static function invalidAuthDataProvider(): array
+    {
+        return [
+            'Missing header' => ['', 'The authorization header is missing.'],
+            'Invalid format' => ['header_data', 'Invalid authorization header format.'],
+            'Decoding error' => ['Basic wrong_header_data', 'Error decoding authorization data.'],
+            'Missing login or password' => ['Basic ' . base64_encode('only_username'), 'Login or password is missing.'],
+            'Incorrect username' => ['Basic ' . base64_encode('incorrect_username:any_password'), 'Incorrect username or password.'],
+            'Incorrect password' => ['Basic ' . base64_encode('any_username:incorrect_password'), 'Incorrect username or password.'],
         ];
     }
 }

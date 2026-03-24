@@ -13,10 +13,8 @@ class BasicAuthenticator
         $this->password = $password;
     }
 
-    public function authenticate(): bool
+    public function authenticate(string $authHeader): bool
     {
-        $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
-
         if (empty($authHeader)) {
             throw new \Exception('The authorization header is missing.');
         }
