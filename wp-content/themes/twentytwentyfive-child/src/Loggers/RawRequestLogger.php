@@ -26,26 +26,18 @@ class RawRequestLogger
 
     private function writeLogToFile(string $message): void
     {
-        try {
-            if (!$this->ensureDirectoryExists(dirname($this->logFilePath))) {
-                trigger_error("Failed to create a directory for the log file.", E_USER_WARNING);
-                error_log($message);
-                return;
-            }
 
-            $handle = fopen($this->logFilePath, 'ab+');
-            if ($handle === false) {
-                trigger_error("The log file could not be opened for writing.", E_USER_WARNING);
-                error_log($message);
-                return;
-            }
-
-            fwrite($handle, $message);
-            fclose($handle);
-        } catch (\Throwable $exception) {
-            trigger_error("Request logging error: {$exception->getMessage()}", E_USER_WARNING);
-            error_log($message);
+        if (!$this->ensureDirectoryExists(dirname($this->logFilePath))) {
+            throw new \Exception('Failed to create a directory for the log file.');
         }
+
+        $handle = fopen($this->logFilePath, 'ab+');
+        if ($handle === false) {
+            throw new \Exception('The log file could not be opened for writing.');
+        }
+
+        fwrite($handle, $message);
+        fclose($handle);
     }
 
     private function ensureDirectoryExists(string $directory): bool
