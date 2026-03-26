@@ -20,7 +20,6 @@ add_action('rest_api_init', function () {
 
 function custom_wc_import_categories(WP_REST_Request $request)
 {
-
     $processor = new RequestProcessor(
         new BasicAuthenticator(ONE_C_USERNAME, ONE_C_PASSWORD),
         new RequestValidator($request),
@@ -29,7 +28,7 @@ function custom_wc_import_categories(WP_REST_Request $request)
 
     try {
         $processor->process($request);
-    } catch (Exception $e) {
+    } catch (WP_Exception $e) {
         return new WP_Error('rest_forbidden', $e->getMessage(), ['status' => $e->getCode()]);
     }
 }

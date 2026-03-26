@@ -4,16 +4,23 @@ namespace TwentytwentyfiveChild\Facades;
 
 use Exception;
 use TwentytwentyfiveChild\Authenticators\BasicAuthenticator;
+use TwentytwentyfiveChild\Exceptions\Auth\ErrorDecodingAuthDataException;
+use TwentytwentyfiveChild\Exceptions\Auth\InvalidAuthHeaderFormatException;
+use TwentytwentyfiveChild\Exceptions\Auth\InvalidLoginOrPassword;
+use TwentytwentyfiveChild\Exceptions\Auth\MissingAuthHeaderException;
+use TwentytwentyfiveChild\Exceptions\Auth\MissingLoginOrPasswordException;
 use TwentytwentyfiveChild\Loggers\RawRequestLogger;
 use TwentytwentyfiveChild\Validators\RequestValidator;
+use WP_Exception;
 use WP_REST_Request;
 
 class RequestProcessor
 {
-    private $authenticator;
-    private $validator;
-    private $logger;
-    private $expectedContentType;
+    private object $authenticator;
+    private object $validator;
+    private object $logger;
+    private string $expectedContentType;
+    private string $route = '';
 
     public function __construct(
         BasicAuthenticator $authenticator,
@@ -32,18 +39,28 @@ class RequestProcessor
         $this->authenticate($request);
         $this->validate();
         $this->log($request);
+
+        $this->route = $request->get_route();
     }
 
-    private function authenticate(WP_REST_Request $request)
+    private function authenticate(WP_REST_Request $request): void
     {
         $authHeader = $request->get_header('authorization');
 
         try {
             $this->authenticator->authenticate($authHeader);
-        } catch (Exception $e) {
-            error_log('Auth error: ' . $e->getMessage());
-
-            throw new Exception($e->getMessage(), 401);
+        } catch (
+            MissingAuthHeaderException |
+            InvalidAuthHeaderFormatException |
+            ErrorDecodingAuthDataException |
+            MissingLoginOrPasswordException |
+            InvalidLoginOrPassword $e
+        ) {
+            error_log('Auth error: ' . $e->getMessage() . ' | Route: ' . $this->route);
+            throw new WP_Exception($e->getMessage(), $e->get_http_status());
+        } catch (\Throwable $e) {
+            error_log('Critical error in RequestProcessor: ' . $e->getMessage());
+            throw new WP_Exception('Internal Server Error', 500);
         }
     }
 

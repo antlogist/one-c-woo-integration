@@ -45,8 +45,8 @@ final class BasicAuthenticatorTest extends TestCase
             'Invalid format' => ['header_data', 'Invalid authorization header format.'],
             'Decoding error' => ['Basic wrong_header_data', 'Error decoding authorization data.'],
             'Missing login or password' => ['Basic ' . base64_encode('only_username'), 'Login or password is missing.'],
-            'Incorrect username' => ['Basic ' . base64_encode('incorrect_username:any_password'), 'Incorrect username or password.'],
-            'Incorrect password' => ['Basic ' . base64_encode('any_username:incorrect_password'), 'Incorrect username or password.'],
+            'Incorrect username' => ['Basic ' . base64_encode('incorrect_username:any_password'), 'Invalid login or password.'],
+            'Incorrect password' => ['Basic ' . base64_encode('any_username:incorrect_password'), 'Invalid login or password.'],
         ];
     }
 }
