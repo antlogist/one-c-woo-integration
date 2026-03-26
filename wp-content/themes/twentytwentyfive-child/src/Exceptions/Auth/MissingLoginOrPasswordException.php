@@ -14,7 +14,7 @@ class MissingLoginOrPasswordException extends \Exception
         parent::__construct($message, $code, $previous);
     }
 
-    public function get_http_status(): int
+    public function getHttpStatus(): int
     {
         return self::HTTP_STATUS;
     }

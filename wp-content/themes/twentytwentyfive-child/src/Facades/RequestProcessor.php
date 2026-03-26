@@ -57,7 +57,7 @@ class RequestProcessor
             InvalidLoginOrPassword $e
         ) {
             error_log('Auth error: ' . $e->getMessage() . ' | Route: ' . $this->route);
-            throw new WP_Exception($e->getMessage(), $e->get_http_status());
+            throw new WP_Exception($e->getMessage(), $e->getHttpStatus());
         } catch (\Throwable $e) {
             error_log('Critical error in RequestProcessor: ' . $e->getMessage());
             throw new WP_Exception('Internal Server Error', 500);
