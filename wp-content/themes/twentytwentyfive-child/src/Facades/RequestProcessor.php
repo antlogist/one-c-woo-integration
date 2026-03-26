@@ -9,6 +9,7 @@ use TwentytwentyfiveChild\Exceptions\Auth\InvalidAuthHeaderFormatException;
 use TwentytwentyfiveChild\Exceptions\Auth\InvalidLoginOrPassword;
 use TwentytwentyfiveChild\Exceptions\Auth\MissingAuthHeaderException;
 use TwentytwentyfiveChild\Exceptions\Auth\MissingLoginOrPasswordException;
+use TwentytwentyfiveChild\Exceptions\Request\InvalidContentTypeException;
 use TwentytwentyfiveChild\Loggers\RawRequestLogger;
 use TwentytwentyfiveChild\Validators\RequestValidator;
 use WP_Exception;
@@ -57,7 +58,7 @@ class RequestProcessor
             InvalidLoginOrPassword $e
         ) {
             error_log('Auth error: ' . $e->getMessage() . ' | Route: ' . $this->route);
-            throw new WP_Exception($e->getMessage(), $e->get_http_status());
+            throw new WP_Exception($e->getMessage(), $e->getHttpStatus());
         } catch (\Throwable $e) {
             error_log('Critical error in RequestProcessor: ' . $e->getMessage());
             throw new WP_Exception('Internal Server Error', 500);
@@ -68,9 +69,12 @@ class RequestProcessor
     {
         try {
             $this->validator->validateContentType($this->expectedContentType);
-        } catch (Exception $e) {
-            error_log("Validation error: " . $e->getMessage());
-            throw new Exception($e->getMessage(), 400);
+        } catch (InvalidContentTypeException $e) {
+            error_log("Request error: " . $e->getMessage());
+            throw new WP_Exception($e->getMessage(), $e->getHttpStatus());
+        } catch (\Throwable $e) {
+            error_log('Critical error in RequestProcessor: ' . $e->getMessage());
+            throw new WP_Exception('Internal Server Error', 500);
         }
     }
 
