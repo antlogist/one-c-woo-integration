@@ -17,7 +17,6 @@ add_action('rest_api_init', function () {
     );
 });
 
-
 function custom_wc_import_categories(WP_REST_Request $request)
 {
     $processor = new RequestProcessor(
@@ -29,6 +28,15 @@ function custom_wc_import_categories(WP_REST_Request $request)
     try {
         $processor->process($request);
     } catch (WP_Exception $e) {
-        return new WP_Error('rest_forbidden', $e->getMessage(), ['status' => $e->getCode()]);
+        $statusCode = $e->getCode();
+        $errorMessage = $e->getMessage();
+
+        if ($statusCode === 401) {
+            return new WP_Error('unauthorized', $errorMessage, ['status' => 401]);
+        } elseif ($statusCode === 400 || $statusCode === 415) {
+            return new WP_Error('rest_invalid_param', $errorMessage, ['status' => $statusCode]);
+        } else {
+            return new WP_Error('rest_forbidden', $errorMessage, ['status' => $statusCode]);
+        }
     }
 }

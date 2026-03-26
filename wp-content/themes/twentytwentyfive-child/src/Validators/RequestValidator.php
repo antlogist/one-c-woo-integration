@@ -2,6 +2,8 @@
 
 namespace TwentytwentyfiveChild\Validators;
 
+use TwentytwentyfiveChild\Exceptions\Request\InvalidContentTypeException;
+
 class RequestValidator
 {
     private $request;
@@ -16,7 +18,7 @@ class RequestValidator
         $providedType = $this->request->get_header('Content-Type');
 
         if (strcasecmp($providedType, $expectedType) !== 0) {
-            throw new \InvalidArgumentException("Expected Content-Type: $expectedType");
+            throw new InvalidContentTypeException($expectedType, $providedType);
         }
     }
 }
