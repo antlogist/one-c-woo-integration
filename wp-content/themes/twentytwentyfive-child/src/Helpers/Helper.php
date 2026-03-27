@@ -8,4 +8,15 @@ class Helper
     {
         return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
     }
+
+    public static function extractWpErrorCode(string $errorMessage): string
+    {
+        $colonPosition = strpos($errorMessage, ':');
+
+        if ($colonPosition !== false) {
+            return substr($errorMessage, 0, $colonPosition);
+        }
+
+        return 'unknown_error';
+    }
 }
