@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-require_once(dirname(__DIR__, 1) . '/config.php');
+require_once(dirname(__DIR__, 5) . '/wp-load.php');
 
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
