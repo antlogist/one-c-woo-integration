@@ -7,6 +7,7 @@ require_once(dirname(__DIR__, 1) . '/tests/config.php');
 $tests = [
     'Authenticators/BasicAuthenticatorTest.php',
     'Authenticators/HMACAuthenticatorTest.php',
+    'Validators/CategoryValidatorTest.php',
 ];
 
 $hasFailures = false;

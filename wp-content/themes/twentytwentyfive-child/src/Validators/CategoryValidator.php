@@ -14,7 +14,6 @@ class CategoryValidator
     ];
     const UNIQUE_META = ['id' => '_1C_id'];
 
-    private array $errors = [];
     private object $wpdb;
 
     public function __construct($wpdb)
@@ -24,10 +23,11 @@ class CategoryValidator
 
     public function validate(array $category): array
     {
+        $errors = [];
 
         foreach (self::REQUIRED_FIELDS as $field) {
             if (!isset($category[$field]) || empty($category[$field])) {
-                $this->errors[] = "The field '$field' must be present and cannot be empty or equal to zero.";
+                $errors[] = "The field '$field' must be present and cannot be empty or equal to zero.";
             }
         }
 
@@ -45,21 +45,21 @@ class CategoryValidator
             switch ($expectedType) {
                 case 'int':
                     if (!is_int($category[$field])) {
-                        $this->errors[] = "The '$field' field must be an integer.";
+                        $errors[] = "The '$field' field must be an integer.";
                     }
                     break;
                 case 'string':
                     if (!is_string($category[$field])) {
-                        $this->errors[] = "The '$field' field must be a string.";
+                        $errors[] = "The '$field' field must be a string.";
                     }
                     break;
                 case 'array':
                     if (!is_array($category[$field])) {
-                        $this->errors[] = "The '$field' field must be an array.";
+                        $errors[] = "The '$field' field must be an array.";
                     }
                     break;
                 default:
-                    $this->errors[] = "Unknown type for the '$field' field.";
+                    $errors[] = "Unknown type for the '$field' field.";
                     break;
             }
         }
@@ -70,11 +70,11 @@ class CategoryValidator
             }
 
             if ($this->checkUniqueMeta($uniqueMetaKey, $category[$field])) {
-                $this->errors[] = "The value of the field '$field' ('{$category[$field]}') is already occupied.";
+                $errors[] = "The value of the field '$field' ('{$category[$field]}') is already occupied.";
             }
         }
 
-        return $this->errors;
+        return $errors;
     }
 
     private function checkUniqueMeta(string $metaKey, string $metaValue)
